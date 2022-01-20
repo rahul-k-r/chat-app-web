@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FixedSizeList } from "react-window";
 // import { Container, Box, Typography, Grid } from "@material-ui/core";
@@ -109,6 +109,10 @@ const ContactListItemCustom = (props) => {
     props.setSelectedIndex(0);
     props.setContactSelector(false);
     let chats = props.chats;
+    if (chats[0].id !== "chat" && chats[0].lastMessage === "") {
+      chats.splice(0, 1);
+      props.setChats(chats);
+    }
     const indexOf = chats.findIndex((x) => x.id === props.id);
     if (indexOf === -1) {
       let chat = {
@@ -164,6 +168,7 @@ const Home = (props) => {
   const [contactList, setContactList] = useState([]);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
   const [selectedChatId, setSelectedChatId] = React.useState("");
+  const listRef = useRef({});
 
   useEffect(() => {
     // console.log(user.reloadUserInfo);
@@ -224,13 +229,19 @@ const Home = (props) => {
   useEffect(() => {
     if (selectedIndex >= 0) {
       setSelectedChatId(chats[selectedIndex].id);
+      listRef.current.scrollToItem(selectedIndex);
+    }
+    if (selectedIndex > 0) {
+      if (chats[0].id !== "chat" && chats[0].lastMessage === "") {
+        let chat = chats;
+        chat.shift();
+        setChats(chat);
+      }
     }
   }, [selectedIndex]);
 
   useEffect(() => {
-    if (selectedIndex === -1) {
-      setSelectedChatId("");
-    } else if (chats[selectedIndex].id !== selectedChatId) {
+    if (selectedIndex !== -1 && chats[selectedIndex].id !== selectedChatId) {
       setSelectedIndex(chats.findIndex((chat) => chat.id === selectedChatId));
     }
   }, [chats]);
@@ -259,7 +270,6 @@ const Home = (props) => {
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         if (querySnapshot.size > 0) {
           let item = querySnapshot.docs[0].data();
-          // console.log(item);
           setLastMessage({
             id: querySnapshot.docs[0].id,
             count: item.count,
@@ -373,6 +383,7 @@ const Home = (props) => {
                   }
                   itemSize={75}
                   width={width}
+                  ref={listRef}
                 >
                   {contactSelector ? ContactSelector : ChatSelector}
                 </FixedSizeList>
