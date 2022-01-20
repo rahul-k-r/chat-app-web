@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
+import {
+  Avatar,
+  Button,
+  CssBaseline,
+  TextField,
+  Link,
+  Grid,
+  Box,
+  Container,
+  Typography,
+} from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
 import { db, auth, provider } from "../firebase/firebase.utils";
 import {
   signInWithEmailAndPassword,
@@ -19,6 +19,7 @@ import {
   GoogleAuthProvider,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
+import GoogleLogo from "../images/google_logo.png";
 
 function Copyright() {
   return (
@@ -166,6 +167,9 @@ export default function SignIn() {
             variant="contained"
             color="primary"
             className={classes.submit}
+            startIcon={
+              <img src={GoogleLogo} alt="Google Logo" width={25} height={25} />
+            }
           >
             Sign In with Google
           </Button>

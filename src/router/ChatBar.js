@@ -224,34 +224,49 @@ const ChatBar = (props) => {
   }
 
   return (
-    <AppBar position="static" elevation={0} color="default">
-      <Toolbar>
-        <IconButton edge="start" color="inherit" aria-label="send">
-          <Mood />
-        </IconButton>
-        <TextField
-          id="outlined-basic"
-          label="Type a message"
-          variant="outlined"
-          value={chatId === props.chat ? text : ""}
-          fullWidth
-          multiline
-          rowsMax={3}
-          onChange={(e) => {
-            setChatId(props.chat);
-            setText(e.target.value);
-          }}
-        />
-        <Button
-          color="primary"
-          variant="contained"
-          size="small"
-          onClick={sendMessage}
-        >
-          Send
-        </Button>
-      </Toolbar>
-    </AppBar>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%",
+      }}
+      className="chat-bar"
+    >
+      <IconButton edge="start" color="inherit" aria-label="send">
+        <Mood />
+      </IconButton>
+      <div style={{ flexGrow: 1 }}>
+        <form onSubmit={sendMessage} noValidate>
+          <TextField
+            autoFocus
+            id="outlined-basic"
+            label="Type a message"
+            variant="outlined"
+            value={chatId === props.chat ? text : ""}
+            fullWidth
+            // multiline
+            onChange={(e) => {
+              setChatId(props.chat);
+              setText(e.target.value);
+            }}
+            InputProps={{
+              endAdornment: (
+                <Button
+                  color="primary"
+                  variant="contained"
+                  size="small"
+                  onClick={sendMessage}
+                >
+                  Send
+                </Button>
+              ),
+            }}
+          />
+        </form>
+      </div>
+    </div>
   );
 };
 

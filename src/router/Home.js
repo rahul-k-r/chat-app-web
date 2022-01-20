@@ -359,21 +359,9 @@ const Home = (props) => {
             <ListItemIcon>
               <Create />
             </ListItemIcon>
-            <ListItemText primary="New Chat" />
+            <ListItemText primary="Start New Conversation" />
           </ListItemButton>
-          {/* <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            disableFocusRipple
-            disableRipple
-            sx={{
-              width: "100%",
-            }}
-          >
-            <Create /> Start new chat
-          </IconButton> */}
-          <div style={{ flex: "1 1 auto", height: height - 150 }}>
+          <div style={{ flexGrow: 1, height: height - 120 }}>
             <AutoSizer>
               {({ height, width }) => (
                 <FixedSizeList
@@ -389,26 +377,11 @@ const Home = (props) => {
                 </FixedSizeList>
               )}
             </AutoSizer>
-
-            {/* <FixedSizeList
-              height={1200}
-              itemCount={chats.length}
-              itemSize={75}
-              width={"100%"}
-            >
-              {ChatSelector}
-            </FixedSizeList> */}
-            {/* <List
-              sx={{ width: "100%", maxWidth: 400, bgcolor: "background.paper" }}
-            > */}
-            {/* <Divider variant="inset" component="li" /> */}
-            {/* {ListRender(chats, userId, selectedIndex, setSelectedIndex)}
-            </List> */}
           </div>
         </Grid>
         <Grid item lg={10} md={9} sm={8} xs={7}>
           {selectedIndex !== -1 && (
-            <div style={{ flex: "1 1 auto", height: height - 140 }}>
+            <div style={{ flex: "1 1 auto", height: height - 130 }}>
               {/* <Typography variant="h2">Chat</Typography> */}
 
               <ChatScreen userId={userId} chat={chats[selectedIndex]} />
