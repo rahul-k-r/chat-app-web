@@ -28,6 +28,7 @@ import {
   query,
   orderBy,
   onSnapshot,
+  getDoc,
 } from "firebase/firestore";
 import { Menu } from "@material-ui/icons";
 import ChatScreen from "./ChatScreen";
@@ -130,14 +131,20 @@ const Home = (props) => {
   const user = props.user;
   const logout = props.logout;
   const userId = user.reloadUserInfo.localId;
-  const username = user.reloadUserInfo.displayName;
-  const profileImage = user.reloadUserInfo.photoUrl;
+  const [username, setUsername] = useState("");
+  const [profileImage, setProfileImage] = useState("");
   const [chats, setChats] = useState([]);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
   const [selectedChatId, setSelectedChatId] = React.useState("");
 
   useEffect(() => {
-    // console.log(user.reloadUserInfo);
+    console.log(user.reloadUserInfo);
+    getDoc(doc(db, "users", userId)).then((doc) => {
+      console.log(doc.data());
+      setUsername(doc.data().username);
+      setProfileImage(doc.data().image_url);
+    });
+
     const q = query(
       collection(db, "chats/" + userId + "/chat"),
       orderBy("modifiedAt", "desc")
@@ -204,7 +211,7 @@ const Home = (props) => {
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         if (querySnapshot.size > 0) {
           let item = querySnapshot.docs[0].data();
-          console.log(item);
+          // console.log(item);
           setLastMessage({
             id: querySnapshot.docs[0].id,
             count: item.count,

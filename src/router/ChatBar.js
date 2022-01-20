@@ -28,7 +28,7 @@ async function sendTimeStampMarker(userId, chatId, count) {
       currentTime.getDate()
     )
   );
-  console.log(timeStamp);
+  // console.log(timeStamp);
   if (chatId === "chat") {
     newChatRefSender = doc(collection(db, "chat"));
   } else {
@@ -96,7 +96,7 @@ const ChatBar = (props) => {
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       if (querySnapshot.size > 0) {
         let item = querySnapshot.docs[0].data();
-        console.log(item);
+        // console.log(item);
         setLastMessage({
           id: querySnapshot.docs[0].id,
           count: item.count,
@@ -116,7 +116,7 @@ const ChatBar = (props) => {
     setChatId(props.chat + " ");
     setChatId(props.chat);
     let count = 0;
-    console.log(lastMessage);
+    // console.log(lastMessage);
     if (lastMessage === undefined) {
       count = 1;
       sendTimeStampMarker(props.userId, chatId, count);

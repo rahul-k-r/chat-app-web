@@ -63,7 +63,7 @@ export default function SignUp() {
     e.preventDefault();
     await createUserWithEmailAndPassword(email, password)
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         const user = auth.currentUser;
         const ref = storage.ref(`user_image/${user.uid}.jpg`);
         ref
@@ -82,10 +82,10 @@ export default function SignUp() {
           displayName: username,
           photoURL: image,
         });
-        console.log(user);
+        // console.log(user);
       })
       .catch((error) => {
-        console.log(error);
+        // console.log(error);
         setError(error);
       });
   };
@@ -178,7 +178,7 @@ export default function SignUp() {
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="SignIn" variant="body2">
+              <Link href="/chat-app-web" variant="body2">
                 Already have an account? Sign in
               </Link>
             </Grid>

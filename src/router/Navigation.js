@@ -18,10 +18,10 @@ import SignUp from "../auth/SignUp";
 const Navigation = (props) => {
   const navigate = useNavigate;
   const logout = (e) => {
-    console.log(props);
+    // console.log(props);
     signOut(auth);
     props.setAuthenticated(false);
-    navigate("/");
+    navigate("/chat-app-web");
   };
   return (
     <Router>
@@ -35,7 +35,7 @@ const Navigation = (props) => {
         </Grid>
         <Routes>
           <Route
-            path="/"
+            path="/chat-app-web"
             element={
               props.authenticated ? (
                 <Home user={props.user} logout={logout} />
@@ -44,8 +44,8 @@ const Navigation = (props) => {
               )
             }
           />
-          <Route path="/SignIn" element={<SignIn />} />
-          <Route path="/SignUp" element={<SignUp />} />
+          <Route path="/chat-app-web/SignIn" element={<SignIn />} />
+          <Route path="/chat-app-web/SignUp" element={<SignUp />} />
           {/* <Route path="/Dashboard" element={<Dashboard />} /> */}
         </Routes>
       </div>
