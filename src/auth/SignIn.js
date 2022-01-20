@@ -12,12 +12,13 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { auth, provider } from "../firebase/firebase.utils";
+import { db, auth, provider } from "../firebase/firebase.utils";
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 function Copyright() {
   return (
@@ -66,6 +67,11 @@ export default function SignIn() {
         // The signed-in user info.
         const user = result.user;
         // ...
+        setDoc(doc(db, "users", user.uid), {
+          email: user.email,
+          username: user.displayName,
+          image_url: user.photoURL,
+        });
       })
       .catch((error) => {
         const errorCode = error.code;

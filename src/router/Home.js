@@ -18,6 +18,7 @@ import {
   IconButton,
   Button,
   ListItemButton,
+  ListItemIcon,
 } from "@mui/material";
 import { db } from "../firebase/firebase.utils";
 import {
@@ -30,7 +31,7 @@ import {
   onSnapshot,
   getDoc,
 } from "firebase/firestore";
-import { Menu } from "@material-ui/icons";
+import { Create, Menu } from "@material-ui/icons";
 import ChatScreen from "./ChatScreen";
 import ChatBar from "./ChatBar";
 import useWindowDimensions from "./useWindowDimenetions";
@@ -103,28 +104,53 @@ const ListItemCustom = (props) => {
   );
 };
 
-// const ListRender = (chats, userId, selectedIndex, setSelectedIndex) => {
-//   // let chat = await getDataFromFirestore(userId);
-//   return chats.map((element, index) => {
-//     return (
-//       <div key={index} style={{ maxHeight: 100 + "px" }}>
-//         <ListItemCustom
-//           index={index}
-//           url={element.image_url}
-//           username={element.username}
-//           lastMessage={element.lastMessage}
-//           modifiedAt={element.modifiedAt}
-//           isMine={element.isMine}
-//           selectedIndex={selectedIndex}
-//           setSelectedIndex={setSelectedIndex}
-//         />
-//         {index != chats.length - 1 && (
-//           <Divider variant="inset" component="li" />
-//         )}
-//       </div>
-//     );
-//   });
-// };
+const ContactListItemCustom = (props) => {
+  const handleListItemClick = (event, index) => {
+    props.setSelectedIndex(0);
+    props.setContactSelector(false);
+    let chats = props.chats;
+    const indexOf = chats.findIndex((x) => x.id === props.id);
+    if (indexOf === -1) {
+      let chat = {
+        id: props.id,
+        username: props.username,
+        image_url: props.url,
+        lastMessage: "",
+        modifiedAt: { seconds: 0, nanoseconds: 0 },
+        isMine: false,
+      };
+      chats.unshift(chat);
+      props.setChats(chats);
+    } else {
+      props.setSelectedIndex(indexOf);
+    }
+  };
+  return (
+    <ListItemButton
+      selected={props.selectedIndex === props.index}
+      onClick={(event) => {
+        handleListItemClick(event, props.index);
+      }}
+      alignItems="flex-start"
+    >
+      <ListItemAvatar>
+        <Avatar alt="" src={props.url} />
+      </ListItemAvatar>
+      <ListItemText
+        primary={
+          <Typography
+            variant="body1"
+            className="inline"
+            color="textPrimary"
+            noWrap
+          >
+            {props.username}
+          </Typography>
+        }
+      />
+    </ListItemButton>
+  );
+};
 
 const Home = (props) => {
   const { width, height } = useWindowDimensions();
@@ -133,14 +159,16 @@ const Home = (props) => {
   const userId = user.reloadUserInfo.localId;
   const [username, setUsername] = useState("");
   const [profileImage, setProfileImage] = useState("");
+  const [contactSelector, setContactSelector] = useState(false);
   const [chats, setChats] = useState([]);
+  const [contactList, setContactList] = useState([]);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
   const [selectedChatId, setSelectedChatId] = React.useState("");
 
   useEffect(() => {
-    console.log(user.reloadUserInfo);
+    // console.log(user.reloadUserInfo);
     getDoc(doc(db, "users", userId)).then((doc) => {
-      console.log(doc.data());
+      // console.log(doc.data());
       setUsername(doc.data().username);
       setProfileImage(doc.data().image_url);
     });
@@ -173,19 +201,39 @@ const Home = (props) => {
       });
       setChats(chats);
     });
+    const unsubscribe2 = onSnapshot(
+      query(collection(db, "users"), orderBy("username", "asc")),
+      (querySnapshot) => {
+        let users = [];
+        querySnapshot.forEach((doc) => {
+          if (doc.id !== userId) {
+            let item = doc.data();
+            users.push({
+              id: doc.id,
+              email: item.email,
+              username: item.username,
+              image_url: item.image_url,
+            });
+          }
+        });
+        setContactList(users);
+      }
+    );
   }, []);
 
-  // useEffect(() => {
-  //   if (selectedIndex >= 0) {
-  //     setSelectedChatId(chats[selectedIndex].id);
-  //   }
-  // }, [selectedIndex]);
+  useEffect(() => {
+    if (selectedIndex >= 0) {
+      setSelectedChatId(chats[selectedIndex].id);
+    }
+  }, [selectedIndex]);
 
-  // useEffect(() => {
-  //   if (chats[selectedIndex].id !== selectedChatId) {
-  //     setSelectedIndex(chats.findIndex((chat) => chat.id === selectedChatId));
-  //   }
-  // }, [chats]);
+  useEffect(() => {
+    if (selectedIndex === -1) {
+      setSelectedChatId("");
+    } else if (chats[selectedIndex].id !== selectedChatId) {
+      setSelectedIndex(chats.findIndex((chat) => chat.id === selectedChatId));
+    }
+  }, [chats]);
 
   const ChatSelector = ({ index, style }) => {
     const [lastMessage, setLastMessage] = useState();
@@ -249,6 +297,26 @@ const Home = (props) => {
     );
   };
 
+  const ContactSelector = ({ index, style }) => {
+    setSelectedIndex(-1);
+    setSelectedChatId("");
+    return (
+      <div style={style}>
+        <ContactListItemCustom
+          index={index}
+          id={contactList[index].id}
+          url={contactList[index].image_url}
+          username={contactList[index].username}
+          selectedIndex={selectedIndex}
+          setSelectedIndex={setSelectedIndex}
+          setContactSelector={setContactSelector}
+          chats={chats}
+          setChats={setChats}
+        />
+      </div>
+    );
+  };
+
   return (
     <div style={{ height: "100vh" }}>
       {/* <Box sx={{ flexGrow: 1 }}> */}
@@ -273,16 +341,40 @@ const Home = (props) => {
       </Box> */}
       <Grid container spacing={2}>
         <Grid item lg={2} md={3} sm={4} xs={5}>
-          <div style={{ flex: "1 1 auto", height: height - 100 }}>
+          <ListItemButton
+            role={undefined}
+            selected={contactSelector}
+            onClick={() => setContactSelector(!contactSelector)}
+          >
+            <ListItemIcon>
+              <Create />
+            </ListItemIcon>
+            <ListItemText primary="New Chat" />
+          </ListItemButton>
+          {/* <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            disableFocusRipple
+            disableRipple
+            sx={{
+              width: "100%",
+            }}
+          >
+            <Create /> Start new chat
+          </IconButton> */}
+          <div style={{ flex: "1 1 auto", height: height - 150 }}>
             <AutoSizer>
               {({ height, width }) => (
                 <FixedSizeList
                   height={height}
-                  itemCount={chats.length}
+                  itemCount={
+                    contactSelector ? contactList.length : chats.length
+                  }
                   itemSize={75}
                   width={width}
                 >
-                  {ChatSelector}
+                  {contactSelector ? ContactSelector : ChatSelector}
                 </FixedSizeList>
               )}
             </AutoSizer>
@@ -304,12 +396,13 @@ const Home = (props) => {
           </div>
         </Grid>
         <Grid item lg={10} md={9} sm={8} xs={7}>
-          <div style={{ flex: "1 1 auto", height: height - 140 }}>
-            {/* <Typography variant="h2">Chat</Typography> */}
-            {selectedIndex !== -1 && (
+          {selectedIndex !== -1 && (
+            <div style={{ flex: "1 1 auto", height: height - 140 }}>
+              {/* <Typography variant="h2">Chat</Typography> */}
+
               <ChatScreen userId={userId} chat={chats[selectedIndex]} />
-            )}
-          </div>
+            </div>
+          )}
           {selectedIndex !== -1 && (
             <ChatBar
               userId={userId}
@@ -317,7 +410,7 @@ const Home = (props) => {
               userImage={profileImage}
               chat={chats[selectedIndex].id}
               contactUsername={chats[selectedIndex].username}
-              contactUrl={chats[selectedIndex].image_url}
+              contactImage={chats[selectedIndex].image_url}
             />
           )}
         </Grid>

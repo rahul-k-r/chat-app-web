@@ -204,20 +204,20 @@ const ChatBar = (props) => {
             },
           ],
         });
-        // setDoc(doc(db, "chats/" + props.userId + "/chat", props.chat), {
-        //   lastMessage: text,
-        //   modifiedAt: Timestamp.now(),
-        //   image_url: props.contactUrl,
-        //   username: props.contactUsername,
-        //   isMine: true,
-        // });
-        // setDoc(doc(db, "chats/" + props.chat + "/chat", props.userId), {
-        //   lastMessage: text,
-        //   modifiedAt: Timestamp.now(),
-        //   image_url: props.profileImage,
-        //   username: props.username,
-        //   isMine: false,
-        // });
+        setDoc(doc(db, "chats/" + props.userId + "/chat", props.chat), {
+          lastMessage: text,
+          modifiedAt: Timestamp.now(),
+          image_url: props.contactImage,
+          username: props.contactUsername,
+          isMine: true,
+        });
+        setDoc(doc(db, "chats/" + props.chat + "/chat", props.userId), {
+          lastMessage: text,
+          modifiedAt: Timestamp.now(),
+          image_url: props.userImage,
+          username: props.username,
+          isMine: false,
+        });
       }
       setText("");
     }
