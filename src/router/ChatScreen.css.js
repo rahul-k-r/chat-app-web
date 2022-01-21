@@ -20,7 +20,7 @@ const styles = {
     display: "flex",
     flex: "0 0 auto",
     justifyContent: "flex-end",
-    width: "100%",
+    width: "98%",
   },
   receivedMessage: {
     backgroundColor: "#FFFFFF",
@@ -38,7 +38,7 @@ const styles = {
     display: "flex",
     flex: "0 0 auto",
     justifyContent: "flex-start",
-    width: "100%",
+    width: "98%",
   },
   header: {
     fontSize: "18px",
