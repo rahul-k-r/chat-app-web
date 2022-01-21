@@ -16,11 +16,11 @@ const styles = {
     fontSize: "16px",
   },
   newMessageContainer: {
-    // padding: "0px 10px 0px 0px",
+    padding: "0px 10px 0px 0px",
     display: "flex",
     flex: "0 0 auto",
     justifyContent: "flex-end",
-    width: "99%",
+    width: "100%",
   },
   receivedMessage: {
     backgroundColor: "#FFFFFF",
@@ -38,7 +38,7 @@ const styles = {
     display: "flex",
     flex: "0 0 auto",
     justifyContent: "flex-start",
-    width: "99%",
+    width: "100%",
   },
   header: {
     fontSize: "18px",

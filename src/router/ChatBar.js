@@ -233,7 +233,7 @@ const ChatBar = (props) => {
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        width: "99%",
+        width: "100%",
       }}
       className="chat-bar"
     >
