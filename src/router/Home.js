@@ -31,7 +31,7 @@ import {
   onSnapshot,
   getDoc,
 } from "firebase/firestore";
-import { Create, Menu } from "@material-ui/icons";
+import { Create, Menu, Group } from "@material-ui/icons";
 import ChatScreen from "./ChatScreen";
 import ChatBar from "./ChatBar";
 import useWindowDimensions from "./useWindowDimenetions";
@@ -74,7 +74,7 @@ const ListItemCustom = (props) => {
         }
         secondary={
           <Grid container wrap="nowrap" spacing={2}>
-            <Grid item lg={7} md={7} sm={6} xs={6}>
+            <Grid item lg={8} md={7} sm={6} xs={6}>
               <Typography
                 variant="body2"
                 className="inline"
@@ -84,7 +84,7 @@ const ListItemCustom = (props) => {
                 {props.sentUsername + props.lastMessage}
               </Typography>
             </Grid>
-            <Grid item lg={5} md={5} sm={6} xs={6}>
+            <Grid item lg={4} md={5} sm={6} xs={6}>
               {/* <span style={{ float: "right" }}> */}
               <Typography
                 variant="body2"
@@ -168,6 +168,8 @@ const Home = (props) => {
   const [contactList, setContactList] = useState([]);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
   const [selectedChatId, setSelectedChatId] = React.useState("");
+  const [groupSelector, setGroupSelector] = React.useState(false);
+  const [groupList, setGroupList] = React.useState([]);
   const listRef = useRef({});
 
   useEffect(() => {
@@ -176,6 +178,7 @@ const Home = (props) => {
       // console.log(doc.data());
       setUsername(doc.data().username);
       setProfileImage(doc.data().image_url);
+      // console.log(doc.data().image_url);
     });
 
     const q = query(
@@ -242,9 +245,21 @@ const Home = (props) => {
 
   useEffect(() => {
     if (selectedIndex !== -1 && chats[selectedIndex].id !== selectedChatId) {
-      setSelectedIndex(chats.findIndex((chat) => chat.id === selectedChatId));
+      setSelectedIndex(
+        chats.findIndex((chat) => {
+          console.log(chat.id);
+          console.log(selectedChatId);
+          return chat.id === selectedChatId;
+        })
+      );
     }
   }, [chats]);
+
+  useEffect(() => {
+    if (!contactSelector) {
+      setGroupSelector(false);
+    }
+  }, [contactSelector]);
 
   const ChatSelector = ({ index, style }) => {
     const [lastMessage, setLastMessage] = useState();
@@ -330,27 +345,28 @@ const Home = (props) => {
   return (
     <div style={{ height: "100vh" }}>
       {/* <Box sx={{ flexGrow: 1 }}> */}
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="menu">
-            <Menu />
-          </IconButton>
-          <Typography variant="h6" color="inherit" sx={{ flexGrow: 1 }}>
-            Home
-          </Typography>
-          <Button color="inherit" onClick={logout}>
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
+
       {/* <Box>
         <Typography variant="h1">This is home</Typography>
         <h1>Hello, {user.displayName}</h1>
         <h1>You are signed in as {user.email}</h1>
         <button onClick={logout}>Sign Out</button>
       </Box> */}
-      <Grid container spacing={2}>
+      <Grid container spacing={0}>
         <Grid item lg={2} md={3} sm={4} xs={5}>
+          <AppBar position="static">
+            <Toolbar>
+              <IconButton edge="start" color="inherit" aria-label="profile">
+                <Avatar src={profileImage} />
+              </IconButton>
+              <Typography variant="h6" color="inherit" sx={{ flexGrow: 1 }}>
+                {username}
+              </Typography>
+              <Button color="inherit" onClick={logout}>
+                Logout
+              </Button>
+            </Toolbar>
+          </AppBar>
           <ListItemButton
             role={undefined}
             selected={contactSelector}
@@ -361,7 +377,25 @@ const Home = (props) => {
             </ListItemIcon>
             <ListItemText primary="Start New Conversation" />
           </ListItemButton>
-          <div style={{ flexGrow: 1, height: height - 120 }}>
+          {contactSelector ? (
+            <ListItemButton
+              role={undefined}
+              selected={groupSelector}
+              onClick={() => setGroupSelector(!groupSelector)}
+            >
+              <ListItemIcon>
+                <Group />
+              </ListItemIcon>
+              <ListItemText primary="New Group" />
+            </ListItemButton>
+          ) : null}
+
+          <div
+            style={{
+              flexGrow: 1,
+              height: contactSelector ? height - 170 : height - 120,
+            }}
+          >
             <AutoSizer>
               {({ height, width }) => (
                 <FixedSizeList
@@ -380,8 +414,23 @@ const Home = (props) => {
           </div>
         </Grid>
         <Grid item lg={10} md={9} sm={8} xs={7}>
+          <AppBar position="static">
+            <Toolbar>
+              {selectedIndex !== -1 && (
+                <IconButton edge="start" color="inherit" aria-label="menu">
+                  <Avatar src={chats[selectedIndex].image_url} alt="" />
+                </IconButton>
+              )}
+              {selectedIndex !== -1 && (
+                <Typography variant="h6" color="inherit" sx={{ flexGrow: 1 }}>
+                  {chats[selectedIndex].username}
+                </Typography>
+              )}
+            </Toolbar>
+          </AppBar>
+
           {selectedIndex !== -1 && (
-            <div style={{ flex: "1 1 auto", height: height - 130 }}>
+            <div style={{ flex: "1 1 auto", height: height - 150 }}>
               {/* <Typography variant="h2">Chat</Typography> */}
 
               <ChatScreen userId={userId} chat={chats[selectedIndex]} />

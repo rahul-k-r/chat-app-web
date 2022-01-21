@@ -164,8 +164,8 @@ export default function SignIn() {
             type="button"
             onClick={signInGoogle}
             fullWidth
-            variant="contained"
-            color="primary"
+            variant="outlined"
+            color="black"
             className={classes.submit}
             startIcon={
               <img src={GoogleLogo} alt="Google Logo" width={25} height={25} />

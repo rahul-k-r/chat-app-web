@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { db } from "../firebase/firebase.utils";
 import { AppBar, Toolbar, IconButton, Button, TextField } from "@mui/material";
 import { Mood } from "@mui/icons-material";
@@ -77,6 +77,7 @@ const ChatBar = (props) => {
   const [text, setText] = useState("");
   const [chatId, setChatId] = useState("");
   const [lastMessage, setLastMessage] = useState();
+  const inputRef = useRef();
 
   useEffect(() => {
     setLastMessage(undefined);
@@ -110,6 +111,7 @@ const ChatBar = (props) => {
         });
       }
     });
+    inputRef.current.focus();
   }, [chatId]);
 
   function sendMessage(e) {
@@ -226,6 +228,7 @@ const ChatBar = (props) => {
   return (
     <div
       style={{
+        padding: "0.5em 0.5em 0em 0.5em",
         display: "flex",
         flexDirection: "row",
         justifyContent: "center",
@@ -240,16 +243,24 @@ const ChatBar = (props) => {
       <div style={{ flexGrow: 1 }}>
         <form onSubmit={sendMessage} noValidate>
           <TextField
-            autoFocus
+            focus
             id="outlined-basic"
             label="Type a message"
             variant="outlined"
             value={chatId === props.chat ? text : ""}
             fullWidth
-            // multiline
+            multiline
+            maxRows={4}
+            ref={inputRef}
             onChange={(e) => {
               setChatId(props.chat);
               setText(e.target.value);
+            }}
+            onKeyPress={(e) => {
+              //Send message on "Enter" and new line on "Shift+Enter"
+              if (e.key === "Enter" && !e.shiftKey) {
+                sendMessage(e);
+              }
             }}
             InputProps={{
               endAdornment: (
